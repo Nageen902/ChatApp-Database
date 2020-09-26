@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase.js"></script>
+
+      <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script> 
+
+      <script>
+        var firebaseConfig = {
+          apiKey: "AIzaSyAYr_m0gR5yTWNjtYpxRsvs0R2oxZ9ij0A",
+          authDomain: "chat-app-33a26.firebaseapp.com",
+          databaseURL: "https://chat-app-33a26.firebaseio.com",
+          projectId: "chat-app-33a26",
+          storageBucket: "chat-app-33a26.appspot.com",
+          messagingSenderId: "572347582186",
+          appId: "1:572347582186:web:40f073d6400053e63fb993",
+          measurementId: "G-MQ18VT2VW8"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+      </script>
+</head>
+<body>
+    <span class="top"></span>
+
+
+    <div class="container-fliud chatbox shadow-lg rounded">
+        <div class="row h-100">
+          <div class="col-md-4 pr-0 d-none d-md-block" id="side-1">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-1 col-sm-1 col-md-1 d-md-none">
+                            <i class="fa fa-arrow-left d-md-none" style="font-size: 20px; cursor: pointer;" onclick="hidechatlist()"></i>
+                        </div>
+                        <div class="col-8 col-sm-8 col-md-8">
+                            <img id="imgprofile" src="images/PP.jpg" alt="Chat pic" class="rounded-circle friend-pic">
+                        </div>
+
+                        <div class="col-2 col-sm-2 col-md-2">
+                        <div class="dropleft">
+                            <span class="dropdown-toggle" data-toggle="dropdown" style="float: right;">
+                                <i class="fa fa-ellipsis-v icon" style="cursor: pointer;" onclick="hidechatlist()"></i>
+                            </span>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" id="lnkNewChat" onclick="PopulateFriendList()" data-toggle="modal" data-target="#modalFriendList">New Chat</a>
+                                <a href="#" id="lnkSignIn" onclick="signIn()" class="dropdown-item">Sign In</a>
+                                <a href="#" id="lnkSignOut" onclick="signOut()" class="dropdown-item" style="display: none;">Sign Out</a>
+                            </div>
+                            <div class="modal fade" id="modalFriendList">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Friend List
+                                                <span class="close" data-dismiss="modal" style="cursor:pointer;">&times;</span>
+                                            </div>
+                                            <ul class="list-group list-group-flush" id="lstFriend">
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+                    </div>
+                </div>        
+            </div>
+                <ul class="list-group list-group-flush" id="lstChat">
+                  </ul>
+
+              </div>
+            </div>
+
+          <div class="col-md-8 pl-0" id="side-2">
+              <div id="chatPanel" class="card" style="display: none;">
+                  <div class="card-header">
+                   <div class="row">
+                       <div class="col-1 col-sm-1 col-md-1 col-lg-1">
+                              <i class="fa fa-list mt-2" style="cursor: pointer;" onclick=" showchartlist()"></i>
+                       </div>
+                       <div class="col-2 col-sm-2 col-md-2 col-lg-1">
+                        <img src="images/PP.jpg" id="imgChat" alt="Chat pic" 
+                        class="rounded-circle friend-pic">
+                       </div>
+                       <div class="col-4 col-sm-4 col-md-4 col-lg-7">
+                        <div class="name" id="divChatNmae" >Any Name</div>
+                        <div class="under-name" id="divChatSeen"></div>
+                       </div>
+
+                       <div class="col-5 col-sm-5 col-md-5 col-lg-3 icon">
+                         
+                            <!-- new -->
+                           <span class="dropdown">
+                            <span class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-paperclip ml-4"></i>
+                            </span>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" onclick="ChooseImage()">
+                                Image
+                                <input type="file" id="imageFile" onchange="SendImage(this);" 
+                                accept="image/*" style="display: none;">
+                                </a>
+                            </div>
+                           </span>
+                       </div>
+                   </div>
+                </div>
+                
+                <div class="card-body" id="messages">
+                    
+                </div>
+                
+                <div class="card-footer">                  
+                    <div class="row">
+                        <div class="col-10 col-sm-10 col-md-10 col-lg-10">
+                            <input id="textMessage"  onkeyup="ChangeSendIcon(this)" type="text" 
+                            placeholder="type here" class="form-control form-rounded" style="width: 100%; font-family: monospace;">
+                        </div>
+                        <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+                            <i id="audio" style="cursor: pointer;" onclick="record(this)" class="fa fa-microphone fa-2x"></i>
+                            <i id="Send"  class="fa fa-paper-plane fa-2x" style="display: none;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="divstart" class="text-center">
+                <i class="fa fa-comments mt-5" style="font-size:250px;"></i>
+                <h4 class="mt-3 text-center">Select your friend from the list and start chating.</h4>
+                <a href="#" onclick="showchartlist()" class="d-md-none">New Chat</a>
+                <button class="btn btn-primary" onclick="signIn()">Sign In</button>
+                <button class="btn btn-primary" onclick="signOut()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="chat.js"></script> 
+</body>
+</html>
